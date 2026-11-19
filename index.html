@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fef7ff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141218" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Аніме-щоденник</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#fef7ff;--sc:#f3edf7;--sch:#ece6f0;--schh:#e6e0e9;
+  --on:#1d1b20;--onv:#49454f;--outline:#79747e;--ov:#cac4d0;
+  --p:#6750a4;--onp:#fff;--pc:#eaddff;--onpc:#21005d;
+  --sec:#e8def8;--onsec:#1d192b;--ter:#ffd8e4;--onter:#31111d;
+  --ok:#c4eed0;--onok:#072711;--warn:#ffe0a8;--onwarn:#2b1700;--err:#b3261e;--errc:#f9dedc;--onerrc:#410e0b;
+  --r-xl:28px;--r-l:20px;--r-m:16px;
+  --sh:0 1px 3px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141218;--sc:#211f26;--sch:#2b2930;--schh:#36343b;
+  --on:#e6e0e9;--onv:#cac4d0;--outline:#938f99;--ov:#49454f;
+  --p:#d0bcff;--onp:#381e72;--pc:#4f378b;--onpc:#eaddff;
+  --sec:#4a4458;--onsec:#e8def8;--ter:#633b48;--onter:#ffd8e4;
+  --ok:#1f4d2d;--onok:#c4eed0;--warn:#5c4100;--onwarn:#ffe0a8;--err:#f2b8b5;--errc:#8c1d18;--onerrc:#f9dedc;
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--on);font:400 16px/1.4 "Roboto Flex",Roboto,system-ui,sans-serif;min-height:100dvh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+svg{width:24px;height:24px;fill:currentColor;flex:none}
+.appbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(env(safe-area-inset-top) + 20px) 20px 8px}
+.appbar h1{margin:0;font-size:32px;line-height:40px;font-weight:500;letter-spacing:-.2px}
+.appbar p{margin:2px 0 0;color:var(--onv);font-size:14px}
+main{padding:4px 16px 16px;max-width:720px;margin:0 auto}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 4px 12px;scrollbar-width:none;margin:0 -16px;padding-inline:20px}
+.chips::-webkit-scrollbar{display:none}
+.fchip{height:36px;padding:0 16px;border-radius:12px;border:1px solid var(--outline);color:var(--onv);white-space:nowrap;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;transition:.2s}
+.fchip.on{background:var(--sec);color:var(--onsec);border-color:transparent;border-radius:18px}
+.fchip small{opacity:.7}
+.field{display:flex;align-items:center;gap:10px;background:var(--sch);border-radius:28px;height:56px;padding:0 18px;margin:4px 0 12px}
+.field input{flex:1;background:none;border:0;outline:0;font:inherit;color:inherit;min-width:0}
+.field input::placeholder{color:var(--onv)}
+.card{display:flex;gap:14px;background:var(--sc);border-radius:var(--r-xl);padding:12px;margin-bottom:12px;position:relative;overflow:hidden}
+.cover{width:92px;height:132px;border-radius:var(--r-l);object-fit:cover;background:var(--schh);flex:none;display:grid;place-items:center;font-size:32px;color:var(--onv)}
+.info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding:2px 4px 2px 0}
+.info h3{margin:0;font-size:16px;line-height:22px;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{font-size:13px;color:var(--onv)}
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:8px;font-size:12px;font-weight:600;align-self:flex-start}
+.s-watching{background:var(--pc);color:var(--onpc)}.s-planned{background:var(--sec);color:var(--onsec)}
+.s-done{background:var(--ok);color:var(--onok)}.s-hold{background:var(--warn);color:var(--onwarn)}.s-dropped{background:var(--errc);color:var(--onerrc)}
+.prog{height:8px;border-radius:4px;background:var(--schh);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--p);border-radius:4px;transition:width .3s}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.row b{font-weight:600}
+.btn{height:40px;padding:0 20px;border-radius:20px;font-weight:500;font-size:14px;display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:.15s}
+.btn:active{transform:scale(.96)}
+.filled{background:var(--p);color:var(--onp)}.tonal{background:var(--sec);color:var(--onsec)}
+.outl{border:1px solid var(--outline);color:var(--p)}.text{color:var(--p);padding:0 12px}.danger{color:var(--err)}
+.btn.sm{height:32px;padding:0 14px;font-size:13px;border-radius:16px}
+.inc{height:40px;min-width:56px;padding:0 16px;border-radius:20px;background:var(--p);color:var(--onp);font-weight:600;display:flex;align-items:center;gap:4px;justify-content:center}
+.inc:active{transform:scale(.94)}
+.air{font-size:12px;color:var(--p);display:flex;align-items:center;gap:4px}
+.empty{text-align:center;color:var(--onv);padding:56px 24px}
+.empty svg{width:56px;height:56px;opacity:.5}
+.empty h2{color:var(--on);font-weight:500;margin:12px 0 4px}
+h2.sec{font-size:14px;font-weight:600;color:var(--p);margin:20px 4px 8px;letter-spacing:.3px}
+.res{display:flex;gap:12px;padding:10px;border-radius:var(--r-l);margin-bottom:6px}
+.res .cover{width:64px;height:92px;border-radius:12px;font-size:22px}
+.res .info h3{font-size:15px}
+.adds{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.list-item{display:flex;align-items:center;gap:14px;background:var(--sc);border-radius:var(--r-l);padding:14px 16px;margin-bottom:8px}
+.list-item.unread{background:var(--pc);color:var(--onpc)}
+.list-item .t{flex:1;min-width:0}.list-item .t b{display:block;font-weight:600}.list-item .t span{font-size:13px;opacity:.8}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--sch);display:flex;justify-content:space-around;padding:12px 8px calc(16px + env(safe-area-inset-bottom))}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:4px;width:25%;font-size:12px;font-weight:500;color:var(--onv);position:relative}
+.nav .ind{width:64px;height:32px;border-radius:16px;display:grid;place-items:center;transition:.25s cubic-bezier(.3,1.4,.5,1);position:relative}
+.nav button.on{color:var(--on)}
+.nav button.on .ind{background:var(--sec);color:var(--onsec)}
+.dot{position:absolute;top:0;right:12px;min-width:16px;height:16px;border-radius:8px;background:var(--err);color:#fff;font-size:11px;display:grid;place-items:center;padding:0 4px}
+.fab{position:fixed;right:20px;bottom:calc(104px + env(safe-area-inset-bottom));z-index:5;height:56px;padding:0 20px 0 16px;border-radius:20px;background:var(--pc);color:var(--onpc);display:flex;align-items:center;gap:10px;font-weight:600;box-shadow:var(--sh)}
+.fab:active{transform:scale(.94)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:var(--bg);width:100%;max-width:640px;max-height:92dvh;overflow:auto;border-radius:28px 28px 0 0;padding:12px 20px calc(24px + env(safe-area-inset-bottom));animation:up .3s cubic-bezier(.2,1,.3,1)}
+.grab{width:32px;height:4px;border-radius:2px;background:var(--ov);margin:0 auto 16px}
+@keyframes up{from{transform:translateY(40%);opacity:.5}}@keyframes fade{from{opacity:0}}
+.sh-head{display:flex;gap:16px;margin-bottom:16px}
+.sh-head .cover{width:96px;height:138px}
+.sh-head h2{margin:0 0 4px;font-size:22px;line-height:28px;font-weight:500}
+.lbl{font-size:12px;font-weight:600;color:var(--onv);margin:18px 0 8px;letter-spacing:.4px;text-transform:uppercase}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.stepper{display:flex;align-items:center;gap:16px;background:var(--sc);border-radius:var(--r-xl);padding:8px;justify-content:space-between}
+.stepper .n{font-size:24px;font-weight:600;text-align:center;flex:1}
+.stepper .n small{font-size:14px;color:var(--onv);font-weight:400}
+.round{width:48px;height:48px;border-radius:24px;background:var(--sec);color:var(--onsec);display:grid;place-items:center}
+.round.big{background:var(--p);color:var(--onp)}
+.round:active{transform:scale(.9)}
+.rate{display:flex;gap:4px;flex-wrap:wrap}
+.rate button{width:34px;height:34px;border-radius:17px;border:1px solid var(--outline);font-size:13px;font-weight:600;color:var(--onv)}
+.rate button.on{background:var(--p);border-color:var(--p);color:var(--onp)}
+.tf{width:100%;background:var(--sch);border:0;border-bottom:2px solid var(--outline);border-radius:12px 12px 0 0;padding:12px 14px;font:inherit;color:inherit;outline:0;resize:vertical}
+.tf:focus{border-bottom-color:var(--p)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.snack{position:fixed;left:16px;right:16px;bottom:calc(104px + env(safe-area-inset-bottom));z-index:30;max-width:560px;margin:0 auto;background:var(--on);color:var(--bg);padding:14px 16px;border-radius:12px;font-size:14px;box-shadow:var(--sh);animation:fade .2s}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.stat div{background:var(--sc);border-radius:var(--r-l);padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:24px;font-weight:600;color:var(--p)}.stat span{font-size:12px;color:var(--onv)}
+.note{font-size:13px;color:var(--onv);margin:6px 4px 12px}
+.spin{width:28px;height:28px;border-radius:50%;border:3px solid var(--schh);border-top-color:var(--p);animation:rot .8s linear infinite;margin:32px auto}
+@keyframes rot{to{transform:rotate(360deg)}}
+.sw{display:inline-flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+<header class="appbar"><h1 id="ttl"></h1><p id="sub"></p></header>
+<main id="view"></main>
+<button class="fab" id="fab" data-act="manual"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Вручну</button>
+<nav class="nav" id="nav"></nav>
+<div id="layer"></div>
+<input type="file" id="imp" accept="application/json" hidden>
+
+<script>
+'use strict';
+const KEY='anime-diary-v1';
+const ST={watching:'Переглядаю',planned:'Планую',done:'Переглянуто',hold:'Відкладено',dropped:'Покинуто'};
+const ORDER=['watching','planned','done','hold','dropped'];
+const FMT={TV:'ТБ-серіал',TV_SHORT:'Короткий серіал',MOVIE:'Фільм',SPECIAL:'Спешл',OVA:'OVA',ONA:'ONA',MUSIC:'Музика'};
+const IC={
+  list:'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z',
+  search:'M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
+  bell:'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z',
+  more:'M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z',
+  plus:'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',minus:'M19 13H5v-2h14v2z',
+  ext:'M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
+  play:'M8 5v14l11-7z',check:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'
+};
+const ico=n=>`<svg viewBox="0 0 24 24"><path d="${IC[n]}"/></svg>`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=s=>document.querySelector(s);
+
+/* ---------- state ---------- */
+let S={items:[],alerts:[],lastCheck:0};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+let persistWarn=false;
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){persistWarn=true}
+  pushSnapshot();
+}
+const ui={tab:'list',filter:'watching',q:'',lq:'',sheet:null,results:null,loading:false,checking:false};
+const find=id=>S.items.find(i=>String(i.id)===String(id));
+
+/* ---------- AniList ---------- */
+async function gql(query,variables){
+  const r=await fetch('https://graphql.anilist.co',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({query,variables})});
+  const j=await r.json().catch(()=>null);
+  if(!r.ok||!j||j.errors)throw new Error(j&&j.errors?j.errors[0].message:'HTTP '+r.status);
+  return j.data;
+}
+const MEDIA=`id format status episodes seasonYear startDate{year} title{romaji english} synonyms coverImage{large color} nextAiringEpisode{episode airingAt}`;
+const Q_SEARCH=`query($q:String){Page(perPage:25){media(search:$q,type:ANIME,sort:SEARCH_MATCH){${MEDIA}}}}`;
+const Q_TREND=`query{Page(perPage:20){media(type:ANIME,sort:TRENDING_DESC,status_in:[RELEASING,NOT_YET_RELEASED]){${MEDIA}}}}`;
+const Q_CHECK=`query($ids:[Int]){Page(perPage:50){media(id_in:$ids,type:ANIME){id status episodes nextAiringEpisode{episode airingAt}
+ relations{edges{relationType node{id type format status startDate{year} title{romaji english}}}}}}}`;
+const tTitle=m=>m.title.english||m.title.romaji;
+function fromMedia(m,status){
+  return{id:m.id,src:'anilist',title:tTitle(m),alt:m.title.romaji,cover:m.coverImage?.large||'',
+    total:m.episodes||null,format:m.format,year:m.seasonYear||m.startDate?.year||null,
+    status,ep:status==='done'&&m.episodes?m.episodes:0,rating:0,note:'',url:'',
+    added:Date.now(),upd:Date.now(),aStatus:m.status,nextEp:m.nextAiringEpisode||null,sequels:null};
+}
+function seqOf(m){
+  return(m.relations?.edges||[]).filter(e=>e.relationType==='SEQUEL'&&e.node.type==='ANIME'&&e.node.format!=='MUSIC')
+    .map(e=>({id:e.node.id,title:tTitle(e.node),format:e.node.format,status:e.node.status,year:e.node.startDate?.year||null}));
+}
+
+/* ---------- alerts / checking ---------- */
+function pushAlert(a,notify=true){
+  if(S.alerts.some(x=>x.key===a.key))return false;
+  S.alerts.unshift(Object.assign({ts:Date.now(),read:false},a));
+  S.alerts=S.alerts.slice(0,100);
+  if(notify)showNative(a);
+  return true;
+}
+async function showNative(a){
+  try{
+    if(!('Notification' in window)||Notification.permission!=='granted')return;
+    const reg=await navigator.serviceWorker.ready;
+    reg.showNotification(a.title,{body:a.text,icon:'icon-192.png',badge:'icon-192.png',tag:a.key,data:{url:'./'}});
+  }catch(e){}
+}
+async function runCheck(manual){
+  if(ui.checking)return 0;
+  const tracked=S.items.filter(i=>i.src==='anilist'&&i.status!=='dropped');
+  if(!tracked.length){if(manual)toast('Немає що перевіряти — додайте аніме зі списку пошуку');return 0}
+  ui.checking=true;let found=0;
+  try{
+    for(let k=0;k<tracked.length;k+=50){
+      const ids=tracked.slice(k,k+50).map(i=>i.id);
+      const d=await gql(Q_CHECK,{ids});
+      for(const m of d.Page.media){
+        const it=find(m.id);if(!it)continue;
+        const seq=seqOf(m);
+        if(it.sequels===null){it.sequels=seq}
+        else{
+          for(const s of seq){
+            const old=it.sequels.find(x=>x.id===s.id);
+            if(!old){found+=pushAlert({key:`seq-${it.id}-${s.id}`,type:'season',animeId:it.id,title:'Новий сезон: '+s.title,text:`Продовження «${it.title}» ${s.status==='NOT_YET_RELEASED'?'анонсовано':'вже виходить'}`})?1:0}
+            else if(old.status==='NOT_YET_RELEASED'&&s.status!=='NOT_YET_RELEASED'){found+=pushAlert({key:`seqrel-${it.id}-${s.id}`,type:'season',animeId:it.id,title:'Вийшов сезон: '+s.title,text:`Почав виходити продовження «${it.title}»`})?1:0}
+          }
+          it.sequels=seq;
+        }
+        if(it.nextEp&&it.nextEp.airingAt*1000<=Date.now()&&['watching','planned'].includes(it.status)){
+          found+=pushAlert({key:`ep-${it.id}-${it.nextEp.episode}`,type:'episode',animeId:it.id,title:`${it.title}: серія ${it.nextEp.episode}`,text:'Вийшла нова серія'})?1:0;
+        }
+        it.nextEp=m.nextAiringEpisode||null;
+        it.aStatus=m.status;
+        if(m.episodes)it.total=m.episodes;
+      }
+    }
+    S.lastCheck=Date.now();save();
+    if(manual)toast(found?`Нових подій: ${found}`:'Нічого нового');
+  }catch(e){if(manual)toast('Не вдалося перевірити: '+e.message)}
+  ui.checking=false;render();return found;
+}
+/* sync with service worker (background checks) */
+function pushSnapshot(){
+  try{
+    if(!navigator.serviceWorker?.controller)return;
+    const items=S.items.filter(i=>i.src==='anilist'&&i.status!=='dropped'&&i.sequels).map(i=>({id:i.id,title:i.title,status:i.status,sequels:i.sequels,nextEp:i.nextEp}));
+    navigator.serviceWorker.controller.postMessage({type:'snapshot',items});
+  }catch(e){}
+}
+async function pullPending(){
+  try{
+    const c=await caches.open('state-v1');const r=await c.match('./__pending');if(!r)return;
+    const list=await r.json();await c.delete('./__pending');
+    let n=0;for(const a of list)if(pushAlert(a,false))n++;
+    if(n){save();render()}
+  }catch(e){}
+}
+
+/* ---------- helpers ---------- */
+const rtf=new Intl.RelativeTimeFormat('uk',{numeric:'auto'});
+function when(ts){const h=(ts*1000-Date.now())/36e5;return Math.abs(h)<24?rtf.format(Math.round(h),'hour'):rtf.format(Math.round(h/24),'day')}
+function dt(ts){return new Date(ts*1000).toLocaleString('uk',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+function metaLine(i){return[FMT[i.format]||null,i.year,i.total?i.total+' еп.':null].filter(Boolean).join(' · ')}
+function coverEl(i,cls='cover'){
+  return i.cover?`<img class="${cls}" src="${esc(i.cover)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.removeAttribute('src');this.alt='${esc((i.title||'?')[0])}'">`
+   :`<div class="${cls}">${esc((i.title||'?')[0])}</div>`;
+}
+function toast(msg){
+  const el=document.createElement('div');el.className='snack';el.textContent=msg;document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2800);
+}
+function anitubeUrl(t){return 'https://anitube.in.ua/index.php?do=search&subaction=search&story='+encodeURIComponent(t)}
+
+/* ---------- mutations ---------- */
+function setStatus(i,st){
+  i.status=st;i.upd=Date.now();
+  if(st==='done'&&i.total)i.ep=i.total;
+  if(st==='watching'&&i.ep===0)i.ep=0;
+  save();
+}
+function setEp(i,n){
+  n=Math.max(0,n);if(i.total)n=Math.min(n,i.total);
+  i.ep=n;i.upd=Date.now();
+  if(i.total&&n>=i.total&&i.status!=='done'){i.status='done';toast('Переглянуто! 🎉')}
+  else if(n>0&&i.status==='planned')i.status='watching';
+  save();
+}
+async function addMedia(m,status){
+  if(find(m.id))return;
+  const it=fromMedia(m,status);S.items.unshift(it);save();render();
+  toast(`«${it.title}» додано: ${ST[status].toLowerCase()}`);
+  runCheck(false); // baseline for sequels
+}
+
+/* ---------- views ---------- */
+const TABS=[['list','Список','list'],['search','Пошук','search'],['news','Новинки','bell'],['more','Ще','more']];
+function renderNav(){
+  const unread=S.alerts.filter(a=>!a.read).length;
+  $('#nav').innerHTML=TABS.map(([k,l,ic])=>`<button class="${ui.tab===k?'on':''}" data-act="tab" data-v="${k}"><span class="ind">${ico(ic)}${k==='news'&&unread?`<span class="dot">${unread}</span>`:''}</span>${l}</button>`).join('');
+}
+function render(){
+  renderNav();
+  $('#fab').style.display=ui.tab==='list'?'flex':'none';
+  const v=$('#view'),t=$('#ttl'),s=$('#sub');
+  if(ui.tab==='list'){t.textContent='Мій список';s.textContent=`${S.items.length} аніме`;v.innerHTML=viewList()}
+  else if(ui.tab==='search'){t.textContent='Пошук аніме';s.textContent='Назва, обкладинка і кількість серій підтягнуться самі';v.innerHTML=viewSearch();bindSearch()}
+  else if(ui.tab==='news'){t.textContent='Новинки';s.textContent='Нові серії та продовження';v.innerHTML=viewNews()}
+  else{t.textContent='Ще';s.textContent='';v.innerHTML=viewMore()}
+  renderSheet();
+}
+function viewList(){
+  const counts={};ORDER.forEach(k=>counts[k]=S.items.filter(i=>i.status===k).length);
+  let h=`<div class="field">${ico('search')}<input id="lq" placeholder="Фільтр у списку" value="${esc(ui.lq)}" autocomplete="off"></div>`;
+  h+=`<div class="chips">`+ORDER.map(k=>`<button class="fchip ${ui.filter===k?'on':''}" data-act="filter" data-v="${k}">${ST[k]} <small>${counts[k]}</small></button>`).join('')+`</div>`;
+  const q=ui.lq.trim().toLowerCase();
+  const list=S.items.filter(i=>i.status===ui.filter&&(!q||(i.title+' '+(i.alt||'')).toLowerCase().includes(q))).sort((a,b)=>b.upd-a.upd);
+  if(!list.length)return h+`<div class="empty">${ico('play')}<h2>Тут порожньо</h2><p>${S.items.length?'У цій категорії нічого немає.':'Знайдіть аніме у вкладці «Пошук» або додайте вручну.'}</p></div>`;
+  return h+list.map(card).join('');
+}
+function card(i){
+  const pct=i.total?Math.round(i.ep/i.total*100):(i.status==='done'?100:0);
+  let action='';
+  if(i.status==='watching')action=`<button class="inc" data-act="inc" data-id="${i.id}">${ico('plus')}1</button>`;
+  else if(i.status==='planned')action=`<button class="inc" data-act="start" data-id="${i.id}">${ico('play')}Почати</button>`;
+  const next=i.nextEp&&i.status!=='dropped'?`<div class="air">${ico('bell').replace('<svg','<svg style="width:14px;height:14px"')}Серія ${i.nextEp.episode} ${when(i.nextEp.airingAt)}</div>`:'';
+  return `<article class="card" data-act="open" data-id="${i.id}">${coverEl(i)}
+    <div class="info"><h3>${esc(i.title)}</h3><div class="meta">${esc(metaLine(i))}</div>
+    <span class="badge s-${i.status}">${ST[i.status]}${i.rating?` · ★${i.rating}`:''}</span>
+    <div class="prog"><i style="width:${pct}%"></i></div>${next}
+    <div class="row"><span>Серія <b>${i.ep}</b> / ${i.total||'?'}</span>${action}</div></div></article>`;
+}
+function viewSearch(){
+  return `<div class="field">${ico('search')}<input id="sq" placeholder="Наприклад: Євангеліон, Naruto…" value="${esc(ui.q)}" autocomplete="off" enterkeyhint="search"></div><div id="results">${resultsHtml()}</div>`;
+}
+function resultsHtml(){
+  if(ui.loading)return '<div class="spin"></div>';
+  if(ui.error)return `<div class="empty"><h2>Помилка</h2><p>${esc(ui.error)}</p></div>`;
+  if(!ui.results)return `<div class="empty">${ico('search')}<h2>Що шукаємо?</h2><p>Пошук іде по англійській і японській (ромадзі) назвах. Українські можна додати вручну.</p></div>`;
+  if(!ui.results.length)return `<div class="empty"><h2>Нічого не знайдено</h2><p>Спробуйте англійську або ромадзі назву.</p></div>`;
+  return (ui.q.trim()?'':'<h2 class="sec">ПОПУЛЯРНЕ ЗАРАЗ</h2>')+ui.results.map(m=>{
+    const ex=find(m.id);const it=fromMedia(m,'planned');
+    const adds=ex?`<span class="badge s-${ex.status}">У списку: ${ST[ex.status]}</span>`
+     :['planned','watching','done'].map(k=>`<button class="btn sm ${k==='planned'?'tonal':'outl'}" data-act="add" data-id="${m.id}" data-v="${k}">${ST[k]}</button>`).join('');
+    const air=m.nextAiringEpisode?`<div class="air">Серія ${m.nextAiringEpisode.episode} ${when(m.nextAiringEpisode.airingAt)}</div>`:'';
+    const stt={FINISHED:'завершено',RELEASING:'виходить',NOT_YET_RELEASED:'анонсовано',CANCELLED:'скасовано',HIATUS:'пауза'}[m.status]||'';
+    return `<div class="res card">${coverEl(it)}<div class="info"><h3>${esc(it.title)}</h3>
+      <div class="meta">${esc(metaLine(it)||'—')}${stt?' · '+stt:''}</div>${m.title.romaji!==it.title?`<div class="meta">${esc(m.title.romaji)}</div>`:''}${air}<div class="adds">${adds}</div></div></div>`;
+  }).join('');
+}
+let tmr;
+function bindSearch(){
+  const inp=$('#sq');if(!inp)return;
+  if(ui.results===null&&!ui.loading)loadTrending();
+  inp.oninput=()=>{ui.q=inp.value;clearTimeout(tmr);tmr=setTimeout(doSearch,450)};
+  inp.onkeydown=e=>{if(e.key==='Enter'){clearTimeout(tmr);doSearch()}};
+}
+async function loadTrending(){
+  ui.loading=true;ui.error='';updRes();
+  try{ui.results=(await gql(Q_TREND)).Page.media}catch(e){ui.error='Немає зв’язку з AniList. '+e.message;ui.results=null}
+  ui.loading=false;updRes();
+}
+async function doSearch(){
+  const q=ui.q.trim();
+  if(!q){ui.results=null;ui.error='';loadTrending();return}
+  ui.loading=true;ui.error='';updRes();
+  try{const d=await gql(Q_SEARCH,{q});if(q===ui.q.trim())ui.results=d.Page.media}
+  catch(e){ui.error='Не вдалося виконати пошук. '+e.message;ui.results=null}
+  ui.loading=false;updRes();
+}
+function updRes(){const r=$('#results');if(r&&ui.tab==='search')r.innerHTML=resultsHtml()}
+
+function viewNews(){
+  let h='';
+  const up=S.items.filter(i=>i.nextEp&&i.status!=='dropped'&&i.status!=='done').sort((a,b)=>a.nextEp.airingAt-b.nextEp.airingAt);
+  h+=`<div style="display:flex;gap:8px;margin:4px 0"><button class="btn tonal" data-act="check">${ui.checking?'Перевіряю…':'Перевірити зараз'}</button></div>`;
+  if(S.lastCheck)h+=`<p class="note">Остання перевірка: ${new Date(S.lastCheck).toLocaleString('uk',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</p>`;
+  h+=`<h2 class="sec">НАСТУПНІ СЕРІЇ</h2>`;
+  h+=up.length?up.map(i=>`<div class="list-item" data-act="open" data-id="${i.id}">${coverEl(i,'cover" style="width:44px;height:62px;border-radius:10px;font-size:16px')}<div class="t"><b>${esc(i.title)}</b><span>Серія ${i.nextEp.episode} · ${dt(i.nextEp.airingAt)} (${when(i.nextEp.airingAt)})</span></div></div>`).join('')
+   :`<p class="note">Серіали зі списку зараз не виходять, або дати ще не оголошено.</p>`;
+  const have=new Set(S.items.map(i=>String(i.id)));const seen=new Set();const seqs=[];
+  S.items.forEach(i=>(i.sequels||[]).forEach(s=>{if(!have.has(String(s.id))&&!seen.has(s.id)&&s.status!=='CANCELLED'&&s.status!=='FINISHED'){seen.add(s.id);seqs.push({...s,from:i.title})}}));
+  h+=`<h2 class="sec">ПРОДОВЖЕННЯ, ЯКИХ НЕМАЄ У СПИСКУ</h2>`;
+  h+=seqs.length?seqs.map(s=>`<div class="list-item"><div class="t"><b>${esc(s.title)}</b><span>${esc(FMT[s.format]||'')} · ${s.status==='RELEASING'?'виходить':'анонсовано'} · після «${esc(s.from)}»</span></div><button class="btn sm tonal" data-act="addseq" data-id="${s.id}">Планую</button></div>`).join('')
+   :`<p class="note">Нових продовжень не знайдено.</p>`;
+  h+=`<h2 class="sec">СПОВІЩЕННЯ</h2>`;
+  h+=S.alerts.length?S.alerts.map(a=>`<div class="list-item ${a.read?'':'unread'}" data-act="open" data-id="${a.animeId}"><div class="t"><b>${esc(a.title)}</b><span>${esc(a.text)} · ${new Date(a.ts).toLocaleDateString('uk',{day:'numeric',month:'short'})}</span></div></div>`).join('')
+   :`<p class="note">Поки порожньо.</p>`;
+  if(S.alerts.some(a=>!a.read)){S.alerts.forEach(a=>a.read=true);setTimeout(()=>{save();renderNav()},1200)}
+  return h;
+}
+function viewMore(){
+  const eps=S.items.reduce((s,i)=>s+(i.ep||0),0);
+  const done=S.items.filter(i=>i.status==='done').length;
+  const hrs=Math.round(eps*24/60);
+  const perm='Notification' in window?Notification.permission:'unsupported';
+  const standalone=matchMedia('(display-mode: standalone)').matches;
+  return `<div class="stat"><div><b>${S.items.length}</b><span>у списку</span></div><div><b>${done}</b><span>переглянуто</span></div><div><b>${eps}</b><span>серій (~${hrs} год)</span></div></div>
+  <h2 class="sec">СПОВІЩЕННЯ</h2>
+  <div class="list-item"><div class="t"><b>Нові серії та сезони</b><span>${perm==='granted'?'Дозволено':perm==='denied'?'Заблоковано в налаштуваннях сайту':perm==='unsupported'?'Не підтримується цим браузером':'Не ввімкнено'}</span></div>${perm==='default'?`<button class="btn sm filled" data-act="notif">Ввімкнути</button>`:''}</div>
+  <p class="note">Перевірка йде при кожному відкритті застосунку, а також у фоні (Chrome робить це сам, зазвичай раз на кілька годин, і лише якщо застосунок встановлено на головний екран).</p>
+  ${standalone?'':`<div class="list-item"><div class="t"><b>Встановіть на головний екран</b><span>Chrome → меню ⋮ → «Установити застосунок». Тоді він відкриватиметься як звичайний і працюватиме офлайн.</span></div></div>`}
+  <h2 class="sec">ДАНІ</h2>
+  <div class="acts" style="margin-top:0"><button class="btn tonal" data-act="export">Зберегти копію</button><button class="btn outl" data-act="import">Завантажити копію</button></div>
+  <p class="note">Дані зберігаються лише на цьому пристрої. Робіть копію час від часу — особливо перед очищенням даних браузера.${persistWarn?' <b style="color:var(--err)">Увага: браузер відмовився зберігати дані!</b>':''}</p>
+  <p class="note">Джерело даних: AniList.co. Кнопка «Шукати на anitube» відкриває пошук на сайті за назвою.</p>`;
+}
+
+/* ---------- sheet ---------- */
+function renderSheet(){
+  const L=$('#layer');
+  if(!ui.sheet){L.innerHTML='';return}
+  if(ui.sheet==='manual'){
+    L.innerHTML=`<div class="scrim" data-act="close"><div class="sheet" data-stop><div class="grab"></div>
+    <h2 style="margin:0 0 8px;font-weight:500">Додати вручну</h2>
+    <div class="lbl">Назва</div><input class="tf" id="m-t" placeholder="Назва аніме">
+    <div class="lbl">Кількість серій (якщо знаєте)</div><input class="tf" id="m-n" type="number" min="1" inputmode="numeric">
+    <div class="lbl">Статус</div><div class="seg" id="m-s">${ORDER.map(k=>`<button class="fchip ${k==='planned'?'on':''}" data-act="msel" data-v="${k}">${ST[k]}</button>`).join('')}</div>
+    <div class="acts"><button class="btn filled" data-act="msave">Додати</button><button class="btn text" data-act="close">Скасувати</button></div></div></div>`;
+    return;
+  }
+  const i=find(ui.sheet);if(!i){ui.sheet=null;L.innerHTML='';return}
+  const sc=L.querySelector('.sheet');const top=sc?sc.scrollTop:0;
+  L.innerHTML=`<div class="scrim" data-act="close"><div class="sheet" data-stop><div class="grab"></div>
+  <div class="sh-head">${coverEl(i)}<div><h2>${esc(i.title)}</h2>${i.alt&&i.alt!==i.title?`<div class="meta">${esc(i.alt)}</div>`:''}<div class="meta">${esc(metaLine(i))}</div>${i.nextEp?`<div class="air" style="margin-top:6px">Серія ${i.nextEp.episode} ${when(i.nextEp.airingAt)}</div>`:''}</div></div>
+  <div class="lbl">Статус</div><div class="seg">${ORDER.map(k=>`<button class="fchip ${i.status===k?'on':''}" data-act="sst" data-v="${k}">${ST[k]}</button>`).join('')}</div>
+  <div class="lbl">Де зупинився</div>
+  <div class="stepper"><button class="round" data-act="ep-" aria-label="Мінус">${ico('minus')}</button><div class="n">${i.ep} <small>/ ${i.total||'?'} серій</small></div><button class="round big" data-act="ep+" aria-label="Плюс">${ico('plus')}</button></div>
+  ${i.total?'':`<div class="lbl">Всього серій</div><input class="tf" id="s-total" type="number" min="1" inputmode="numeric" value="" placeholder="Невідомо">`}
+  <div class="lbl">Оцінка</div><div class="rate">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="${i.rating===n?'on':''}" data-act="rate" data-v="${n}">${n}</button>`).join('')}</div>
+  <div class="lbl">Нотатка</div><textarea class="tf" id="s-note" rows="3" placeholder="Враження, на якому сайті дивлюсь…">${esc(i.note)}</textarea>
+  <div class="lbl">Посилання на серію / тайтл</div><input class="tf" id="s-url" type="url" placeholder="https://anitube.in.ua/…" value="${esc(i.url)}">
+  <div class="acts">
+    <a class="btn tonal" href="${esc(anitubeUrl(i.title))}" target="_blank" rel="noopener">${ico('ext')}Шукати на anitube</a>
+    ${i.url?`<a class="btn filled" href="${esc(i.url)}" target="_blank" rel="noopener">${ico('play')}Продовжити</a>`:''}
+  </div>
+  ${(i.sequels&&i.sequels.length)?`<div class="lbl">Продовження</div>`+i.sequels.map(s=>{const ex=find(s.id);return `<div class="list-item" style="margin-bottom:6px"><div class="t"><b>${esc(s.title)}</b><span>${esc(FMT[s.format]||'')}${s.year?' · '+s.year:''}</span></div>${ex?`<span class="badge s-${ex.status}">${ST[ex.status]}</span>`:`<button class="btn sm tonal" data-act="addseq" data-id="${s.id}">Планую</button>`}</div>`}).join(''):''}
+  <div class="acts"><button class="btn text danger" data-act="del">Видалити зі списку</button><button class="btn text" data-act="close" style="margin-left:auto">Закрити</button></div>
+  </div></div>`;
+  const ns=L.querySelector('.sheet');if(ns)ns.scrollTop=top;
+  const nt=$('#s-note'),nu=$('#s-url'),tt=$('#s-total');
+  if(nt)nt.onchange=()=>{i.note=nt.value;save()};
+  if(nu)nu.onchange=()=>{i.url=nu.value.trim();save();renderSheet()};
+  if(tt)tt.onchange=()=>{const n=parseInt(tt.value);if(n>0){i.total=n;save();render()}};
+}
+async function addSeq(id){
+  try{
+    const d=await gql(`query($id:Int){Media(id:$id,type:ANIME){${MEDIA}}}`,{id:Number(id)});
+    await addMedia(d.Media,'planned');
+  }catch(e){toast('Не вдалося додати: '+e.message)}
+}
+
+/* ---------- events ---------- */
+let msStatus='planned';
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('[data-act]');if(!t)return;
+  if(e.target.closest('a[href]')&&!t.closest('a'))return;
+  const act=t.dataset.act,id=t.dataset.id,v=t.dataset.v;
+  if(act==='close'){if(e.target.closest('[data-stop]')&&!e.target.closest('button[data-act="close"]'))return;ui.sheet=null;render();return}
+  if(e.target.closest('[data-stop]')&&t.classList.contains('scrim'))return;
+  switch(act){
+    case'tab':ui.tab=v;ui.sheet=null;render();scrollTo(0,0);break;
+    case'filter':ui.filter=v;render();break;
+    case'open':ui.sheet=id;render();break;
+    case'inc':{const i=find(id);setEp(i,i.ep+1);render();break}
+    case'start':{const i=find(id);setStatus(i,'watching');ui.filter='watching';render();break}
+    case'add':{const m=ui.results.find(x=>String(x.id)===id);await addMedia(m,v);updRes();break}
+    case'addseq':await addSeq(id);render();break;
+    case'sst':{const i=find(ui.sheet);setStatus(i,v);ui.filter=v;render();break}
+    case'ep+':{const i=find(ui.sheet);setEp(i,i.ep+1);render();break}
+    case'ep-':{const i=find(ui.sheet);setEp(i,i.ep-1);if(i.status==='done'&&i.total&&i.ep<i.total){i.status='watching';save()}render();break}
+    case'rate':{const i=find(ui.sheet);i.rating=i.rating===Number(v)?0:Number(v);save();render();break}
+    case'del':{const i=find(ui.sheet);if(confirm(`Видалити «${i.title}»?`)){S.items=S.items.filter(x=>x!==i);save();ui.sheet=null;render()}break}
+    case'manual':ui.sheet='manual';msStatus='planned';render();break;
+    case'msel':msStatus=v;document.querySelectorAll('#m-s .fchip').forEach(b=>b.classList.toggle('on',b.dataset.v===v));break;
+    case'msave':{
+      const title=$('#m-t').value.trim();if(!title){toast('Вкажіть назву');return}
+      const n=parseInt($('#m-n').value)||null;
+      S.items.unshift({id:'m'+Date.now(),src:'manual',title,alt:'',cover:'',total:n,format:null,year:null,status:msStatus,ep:msStatus==='done'&&n?n:0,rating:0,note:'',url:'',added:Date.now(),upd:Date.now(),nextEp:null,sequels:[]});
+      save();ui.sheet=null;ui.filter=msStatus;render();break}
+    case'check':await runCheck(true);break;
+    case'notif':{
+      try{const p=await Notification.requestPermission();if(p==='granted'){registerSync();toast('Сповіщення ввімкнено')}}catch(e){toast('Не вдалося ввімкнути')}
+      render();break}
+    case'export':{
+      const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='anime-diary-'+new Date().toISOString().slice(0,10)+'.json';a.click();break}
+    case'import':$('#imp').click();break;
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='lq'){ui.lq=e.target.value;const pos=e.target.selectionStart;const v=$('#view');v.innerHTML=viewList();const n=$('#lq');n.focus();n.setSelectionRange(pos,pos)}
+});
+$('#imp').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const d=JSON.parse(await f.text());
+    if(!Array.isArray(d.items))throw new Error('формат');
+    if(!confirm(`Замінити поточний список (${S.items.length}) копією (${d.items.length})?`))return;
+    S=Object.assign({items:[],alerts:[],lastCheck:0},d);save();render();toast('Відновлено');
+  }catch(err){toast('Не вдалося прочитати файл')}
+  e.target.value='';
+};
+
+/* ---------- boot ---------- */
+async function registerSync(){
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    if('periodicSync' in reg)await reg.periodicSync.register('check-anime',{minInterval:6*3600*1000});
+  }catch(e){}
+}
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready).then(()=>{
+    pushSnapshot();pullPending();
+    if(Notification.permission==='granted')registerSync();
+  }).catch(()=>{});
+}
+try{navigator.storage?.persist?.()}catch(e){}
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden){pullPending();if(Date.now()-S.lastCheck>3*3600e3)runCheck(false)}
+});
+render();
+if(Date.now()-S.lastCheck>3*3600e3)runCheck(false);
+</script>
+</body>
+</html>
